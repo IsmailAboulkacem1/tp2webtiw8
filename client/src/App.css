@@ -1,10 +1,120 @@
 #root {
+  /* 100% de la hauteur de la fenêtre */
+  min-height: 100vh;
+  /* bleu “Sli.do” (à ajuster si nécessaire) */
+  background-color: #2f61ed;
+  /* centrer horizontalement si vous le voulez */
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
+/* 2) Votre conteneur de questions */
+.event-panel {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+}
+/* l3ybat*/
+/* App.css */
+
+.question-card {
+  background-color: #ffffff;           /* fond blanc */
+  border-radius: 0.5rem;               /* coins arrondis */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);/* ombre légère */
+  padding: 1rem;                       /* espace intérieur */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;                 /* écart entre les cartes */
+}
+
+.question-card__author {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.question-card__content {
+  color: #333;
+  margin-top: 0.25rem;
+}
+
+.question-card__upvote {
+  background-color: #f3f4f6;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color .2s;
+}
+.question-card__upvote:hover {
+  background-color: #e5e7eb;
+}
+
+
+
+/* talhna */
+
+
+
+
+/* Formulaire d'ajout de question */
+.add-question-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.add-question-form__input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;      /* gray-300 */
+  border-radius: 0.375rem;        /* rounded-md */
+  outline: none;
+  font-size: 1rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.add-question-form__input:focus {
+  border-color: #60a5fa;          /* blue-400 */
+  box-shadow: 0 0 0 2px rgba(96,165,250,0.5);
+}
+
+.add-question-form__button {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;      /* blue-600 */
+  color: white;
+  border: none;
+  border-radius: 0.375rem;        /* rounded-md */
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color .2s;
+}
+
+.add-question-form__button:hover {
+  background-color: #2563eb;      /* blue-700 */
+}
+/* talhna */
+/* Séparateur “Latest question” */
+.latest-separator {
+  margin: 1.5rem 0;                  /* espace au-dessus et en-dessous */
+  text-align: center;               /* centré */
+  color: rgba(255, 255, 255, 0.8);  /* blanc semi-transparent */
+  font-weight: 500;                 /* medium */
+  font-size: 1rem;                  /* taille normale */
+}
+/* talhna */
+
+/* top questions */
+/* Pour le compteur de questions */
+.questions-count {
+  color: rgba(255, 255, 255, 0.7);  /* équivalent de text-white/70 */
+  font-size: 0.875rem;               /* équivalent de text-sm */
+  line-height: 1.25rem;
+}
+/* talhna */
 /* règle de base pour les logos */
 .logo {
   height: 5rem;                  /* taille fixe */
