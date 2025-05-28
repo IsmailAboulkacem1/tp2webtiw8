@@ -1,0 +1,46 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* règle de base pour les logos */
+.logo {
+  height: 5rem;                  /* taille fixe */
+  margin: 0 1.5rem;              /* espacement */
+  transition: transform 0.3s;    /* animation fluide */
+}
+
+/* effet de survol */
+.logo:hover {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* variante React : une teinte différente */
+.logo.react {
+  filter: hue-rotate(150deg);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
