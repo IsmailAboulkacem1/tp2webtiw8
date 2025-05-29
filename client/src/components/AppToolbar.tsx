@@ -1,4 +1,4 @@
-import React from 'react'
+
 import type { PublicEvent } from '../models'
 
 interface Props {

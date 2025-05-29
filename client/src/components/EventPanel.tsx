@@ -1,5 +1,5 @@
 // src/components/EventPanel.tsx
-import React from 'react'
+
 import type { PublicEvent, Question } from '../models'
 import QuestionCard from './QuestionCard'
 import AddQuestionForm from './AddQuestionForm'

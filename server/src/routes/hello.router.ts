@@ -1,23 +1,10 @@
-import express from 'express';
+import { Router, Request, Response } from 'express'
 
-const helloRouteur = express.Router();
+const router = Router()
 
-// With middlewares you can ensure the user is authenticated
-// before requesting secured API routes
-helloRouteur.use((request, response, next) => {
-  process.stdout.write('HelloRouter Middleware\n');
-  if ( request.ip?.endsWith('127.0.0.1')) {
-    process.stdout.write('Request from local IP\n');
-    next();
-  } else {
-    next();
-  }
-});
+// simple GET /hello/ → renvoie un JSON
+router.get('/', (_req: Request, res: Response) => {
+  res.json({ message: 'Hello from your API!' })
+})
 
-helloRouteur.get('/', (request, response) => {
-  response.send('Hello TIW8 !');
-});
-
-export {
-  helloRouteur as HelloRouteur
-};
+export default router

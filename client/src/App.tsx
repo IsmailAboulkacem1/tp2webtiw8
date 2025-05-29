@@ -1,93 +1,88 @@
+// src/App.tsx
+// (via SessionWrapper), on  lis l’état (events, currentEventId) et dispatch-ez bien 
+// les actions Redux à la place du state local.
 import React from 'react'
-import { Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom'
-import type { PublicEvent, Question } from './models'
+import {
+  Routes,
+  Route,
+  Navigate,
+  useParams,
+  useNavigate
+} from 'react-router-dom'
+import type { Question } from './models'
+
+// Redux : hooks typés + actions
+import { useAppSelector, useAppDispatch } from './store/hooks'
+import {
+  setCurrentEvent,
+  createQuestion,
+  upvoteQuestion
+} from './slices/eventsSlice'
 
 import AppToolbar from './components/AppToolbar'
-import EventPanel  from './components/EventPanel'
-
-const initialEvents: PublicEvent[] = [
-  {
-    id: 1,
-    name: 'Session A',
-    questions: [
-      { id: 'a1', author: 'Lucy',     content: 'Where should we be focusing our business development efforts?', votes: 72, color: '#3B82F6' },
-      { id: 'a2', author: 'Rachel',   content: 'What is the status on the new organizational structure?',     votes: 23, color: '#8B5CF6' },
-    ]
-  },
-  {
-    id: 2,
-    name: 'Session B',
-    questions: [
-      { id: 'b1', author: 'Peter',    content: 'Does the company support and cover the costs of external courses?', votes: 9, color: '#F59E0B' },
-      { id: 'b2', author: 'Anonymous',content: 'Why do we invest so many resources in developing our own CRM?', votes: 7, color: '#6B7280' },
-    ]
-  }
-]
+import EventPanel from './components/EventPanel'
 
 export default function App() {
   return (
     <Routes>
-      {/* par défaut, on redirige vers la session 1 */}
+      {/* / → redirige automatiquement vers la session 1 */}
       <Route path="/" element={<Navigate to="/session/1" replace />} />
 
-      {/* route dynamique, on affiche SessionPage */}
-      <Route path="/session/:id" element={<SessionPage />} />
+      {/* route dynamique pour chaque session */}
+      <Route path="/session/:id" element={<SessionWrapper />} />
 
-      {/* fallback 404 */}
+      {/* fallback si aucune route ne matche */}
       <Route path="*" element={<h2>Page non trouvée</h2>} />
     </Routes>
   )
 }
 
-function SessionPage() {
-  // 1) Récupérer l'id depuis l'URL
-  const { id } = useParams<'id'>()
+function SessionWrapper() {
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  // Lire l'id dans l'URL et le convertir en nombre
+  const { id } = useParams<{ id: string }>()
   const sessionId = Number(id)
-  const navigate  = useNavigate()
 
-  // 2) Votre état global d’événements
-  const [events, setEvents] = React.useState<PublicEvent[]>(initialEvents)
+  // Récupérer l'état global depuis Redux
+  const { events, currentEventId } = useAppSelector(state => state.events)
 
-  // 3) Trouver l’événement courant
+  // Trouver l'événement correspondant
   const currentEvent = events.find(e => e.id === sessionId)
-  if (!currentEvent) return <h2>Session « {id} » introuvable</h2>
+  if (!currentEvent) {
+    return <h2>Session « {id} » introuvable</h2>
+  }
 
-  // 4) Vos handlers inchangés
+  // Synchroniser l'URL vers Redux (une seule fois ou quand id change)
+  React.useEffect(() => {
+    if (currentEventId !== sessionId) {
+      dispatch(setCurrentEvent(sessionId))
+    }
+  }, [sessionId, currentEventId, dispatch])
+
+  // Handler pour ajouter une question
   const handleAddQuestion = (newQ: Question) => {
-    setEvents(evts =>
-      evts.map(e =>
-        e.id === sessionId ? { ...e, questions: [newQ, ...e.questions] } : e
-      )
-    )
+    dispatch(createQuestion(newQ))
   }
 
+  // Handler pour upvoter
   const handleUpvote = (qid: string) => {
-    setEvents(evts =>
-      evts.map(e =>
-        e.id === sessionId
-          ? {
-              ...e,
-              questions: e.questions.map(q =>
-                q.id === qid ? { ...q, votes: q.votes + 1 } : q
-              )
-            }
-          : e
-      )
-    )
+    dispatch(upvoteQuestion(qid))
   }
 
-  // 5) Quand on clique sur la toolbar, on navigue vers /session/X
+  // Quand on sélectionne une autre session dans la toolbar
   const handleSelectEvent = (eid: number) => {
+    dispatch(setCurrentEvent(eid))
     navigate(`/session/${eid}`)
   }
 
-  // 6) Rendu final
   return (
     <div className="min-h-screen bg-blue-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <AppToolbar
           events={events}
-          currentEventId={sessionId}
+          currentEventId={currentEventId}
           onSelectEvent={handleSelectEvent}
         />
         <EventPanel
