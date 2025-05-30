@@ -1,7 +1,7 @@
 # TP2 Web – Stack Vite + React + Express + Redux Toolkit + Socket.io (TypeScript)
 
 > Projet réalisé pour le TP2 de l’UE TIW8 – Application de questions/réponses temps‐réel multi‐devices  
-> **Auteurs : Ismail Aboulkacem & [Votre binôme]**
+> **Auteurs : Ismail Aboulkacem**
 
 ---
 
