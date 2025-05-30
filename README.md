@@ -1,57 +1,80 @@
-# TP1 Web - Stack Vite + React + Express (TypeScript)
+# TP2 Web – Stack Vite + React + Express + Redux Toolkit + Socket.io (TypeScript)
 
-> Projet réalisé pour le TP1 de l’UE TIW8.  
-> **Auteur : Ismail Aboulkacem**
-
----
-
-## 📦 Environnement utilisé
-
-| Technologie | Version     |
-|-------------|-------------|
-| Node.js     | v23.8.0     |
-| Yarn        | v1.22.22    |
-| Express     | v5.1.0      |
-| TypeScript  | v5.8.3      |
-| Vite        | v6.3.5      |
-| React       | v19.1.0     |
+> Projet réalisé pour le TP2 de l’UE TIW8 – Application de questions/réponses temps‐réel multi‐devices  
+> **Auteurs : Ismail Aboulkacem & [Votre binôme]**
 
 ---
 
-## 🧭 Structure du projet
+## 📦 Environnement
+
+| Technologie         | Version     |
+|---------------------|-------------|
+| Node.js             | v18+        |
+| Yarn / npm          | v1.22.22 / v9+ |
+| Express             | v5.x        |
+| socket.io           | v4.x        |
+| TypeScript          | v5.x        |
+| Vite                | v6.x        |
+| React               | v18.x       |
+| react-router-dom    | v6.x        |
+| @reduxjs/toolkit    | v1.x        |
+| react-redux         | v8.x        |
+| react-device-detect (optionnel) | v2.x |
+| OneDollar.js (gestures) | included local |
+
+---
+
+## 🗂️ Structure du projet
+
+
 
 \`\`\`
-tp1webtiw8/
+tp2webtiw8/
 
-├── server/    → Serveur Express + TypeScript
+├── server/ # Back-end Express + Socket.io
 
-│   ├── src/
+│ ├── src/
 
-│   │   ├── index.ts
+│ │ ├── index.ts # Serveur HTTP + WebSocket + SPA catch-all
 
-│   │   └── routes/hello.router.ts
+│ │ └── routes/ # Web API routes (ex: hello.router.ts)
 
-│   ├── dist/
+│ ├── dist/ # JS compilé
 
-│   ├── tsconfig.json
+│ ├── package.json
 
-│   └── package.json
+│ └── tsconfig.json
 
 │
-├── client/    → Application React + Vite + TypeScript
+├── client/ # Front-end React + Redux + Vite
 
-│   ├── src/
+│ ├── public/
 
-│   ├── dist/
+│ ├── src/
 
-│   ├── tsconfig.json
+│ │ ├── App.tsx # Routeur, SessionWrapper & rôle admin/participant
 
-│   └── package.json
+│ │ ├── main.tsx
+
+│ │ ├── models.d.ts
+
+│ │ ├── store/ # Redux Toolkit: store, hooks, slices, middleware
+
+│ │ ├── components/ # AppToolbar, EventPanel, QuestionCard, AdminSession, Header, GestureCanvas…
+
+│ │ ├── oneDollar.ts # Stub du $1-Recognizer
+
+│ │ └── index.css / App.css
+
+│ ├── dist/ # Build Vite
+
+│ ├── package.json
+
+│ └── tsconfig.json
 
 │
 ├── .gitignore
-
-└── README.md
+└── README.md # ← Vous êtes ici !
 \`\`\`
 
 ---
@@ -61,10 +84,10 @@ tp1webtiw8/
 ### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/IsmailAboulkacem1/tp1webtiw8.git
+git clone https://github.com/IsmailAboulkacem1/tp2webtiw8.git
   ```
 ```bash
-cd tp1webtiw8
+cd tp2webtiw8
   ```
 
 ---
@@ -75,17 +98,14 @@ cd tp1webtiw8
 cd server
 yarn install
 
-# En développement avec ts-node
-yarn dev
-
 # Ou version compilée
-yarn build     # génère dist/
+
 yarn start     # exécute dist/index.js
 ```
 
 ---
 
-### 3. Côté client (`/client`)
+### 3. Côté client (`/client`) (Port 5173)
 
 ```bash
 cd ../client
@@ -93,36 +113,40 @@ yarn install
 
 # Développement avec hot-reload
 yarn dev
-
-# Production build
-yarn build
 ```
 
 ---
 
-### 4. Intégrer client + serveur
-
-Dans `server/src/index.ts`, ajoute ces lignes :
-
-```ts
-import path from 'path';
-
-const DIST_PATH = path.join(__dirname, '../../client/dist');
-app.use(express.static(DIST_PATH));
-app.get('/', (_, res) => res.sendFile(path.join(DIST_PATH, 'index.html')));
-```
 
 ---
 
-## 📄 Remarques importantes
+### 4.  🛣️ Routes React
 
-- Le code TypeScript est compilé dans `/server/dist/`
-- React est buildé avec Vite dans `/client/dist/`
-- Le projet est compatible pour un déploiement via **VM + NGINX** ou **GitLab CI**
-- Le fichier `.gitignore` exclut bien `node_modules/` et `dist/`
+- /session/:id → interface participant
+- /admin/session/:id → interface admin
+- <Header> permet de basculer de rôle et de session
+- Le state “currentEvent” se synchronise automatiquement via useParams, useNavigate et Redux
 
 ---
+### 5.✅ Vérifications avant rendu
 
+- README.md à jour
+
+- package.json net (pas de dépendances inutiles)
+
+- Routes React fonctionnelles
+
+- Redux + DevTools ok
+
+- WebSockets synchronisent entre onglets/appareils
+
+- Canvas & gestes opérationnels
+
+- Admin peut Ajouter/Éditer/Supprimer/Upvote/Downvote questions
+
+- Linting & Typescript sans erreurs
+
+- Déploiement statique (express + NGINX) testé
 ## ✨ Auteur
 
 **Ismail Aboulkacem**
