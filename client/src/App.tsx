@@ -1,37 +1,28 @@
 // src/App.tsx
-// (via SessionWrapper), on  lis l’état (events, currentEventId) et dispatch-ez bien 
-// les actions Redux à la place du state local.
 import React from 'react'
-import {
-  Routes,
-  Route,
-  Navigate,
-  useParams,
-  useNavigate
-} from 'react-router-dom'
+import { Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom'
 import type { Question } from './models'
+import Header from './components/Header'
+import EventPanel from './components/EventPanel'
+import AdminSession from './components/AdminSession'
+import GestureCanvas from './components/GestureCanvas'
 
-// Redux : hooks typés + actions
 import { useAppSelector, useAppDispatch } from './store/hooks'
 import {
   setCurrentEvent,
   createQuestion,
-  upvoteQuestion
+  upvoteQuestion,
+  deleteQuestion
 } from './slices/eventsSlice'
 
-import AppToolbar from './components/AppToolbar'
-import EventPanel from './components/EventPanel'
+type Role = 'participant' | 'admin'
 
 export default function App() {
   return (
     <Routes>
-      {/* / → redirige automatiquement vers la session 1 */}
       <Route path="/" element={<Navigate to="/session/1" replace />} />
-
-      {/* route dynamique pour chaque session */}
       <Route path="/session/:id" element={<SessionWrapper />} />
-
-      {/* fallback si aucune route ne matche */}
+      <Route path="/admin/session/:id" element={<SessionWrapper />} />
       <Route path="*" element={<h2>Page non trouvée</h2>} />
     </Routes>
   )
@@ -40,56 +31,65 @@ export default function App() {
 function SessionWrapper() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-
-  // Lire l'id dans l'URL et le convertir en nombre
   const { id } = useParams<{ id: string }>()
   const sessionId = Number(id)
-
-  // Récupérer l'état global depuis Redux
-  const { events, currentEventId } = useAppSelector(state => state.events)
-
-  // Trouver l'événement correspondant
+  const { events, currentEventId } = useAppSelector(s => s.events)
   const currentEvent = events.find(e => e.id === sessionId)
-  if (!currentEvent) {
-    return <h2>Session « {id} » introuvable</h2>
-  }
+  const isAdminRoute = window.location.pathname.startsWith('/admin')
 
-  // Synchroniser l'URL vers Redux (une seule fois ou quand id change)
+  const [role, setRole] = React.useState<Role>(
+    isAdminRoute ? 'admin' : 'participant'
+  )
+
+  // synchroniser URL ▶️ Redux
   React.useEffect(() => {
     if (currentEventId !== sessionId) {
       dispatch(setCurrentEvent(sessionId))
     }
   }, [sessionId, currentEventId, dispatch])
 
-  // Handler pour ajouter une question
-  const handleAddQuestion = (newQ: Question) => {
-    dispatch(createQuestion(newQ))
+  if (!currentEvent) {
+    return <h2>Session « {id} » introuvable</h2>
   }
 
-  // Handler pour upvoter
-  const handleUpvote = (qid: string) => {
-    dispatch(upvoteQuestion(qid))
-  }
+  // handlers communs
+  const handleAddQuestion = (q: Question) => dispatch(createQuestion(q))
+  const handleUpvote       = (qid: string) => dispatch(upvoteQuestion(qid))
+  const handleDelete       = (qid: string) => dispatch(deleteQuestion({ eventId: sessionId, questionId: qid }))
 
-  // Quand on sélectionne une autre session dans la toolbar
+  // quand on change de session via le Header
   const handleSelectEvent = (eid: number) => {
     dispatch(setCurrentEvent(eid))
-    navigate(`/session/${eid}`)
+    navigate(`${role === 'admin' ? '/admin' : ''}/session/${eid}`)
+  }
+
+  // swipe gestures (si utilisé)
+  const onSwipe = (g: string) => {
+    if (g === '>') handleSelectEvent(sessionId % events.length + 1)
+    else if (g === '<') handleSelectEvent((sessionId + events.length - 2) % events.length + 1)
   }
 
   return (
     <div className="min-h-screen bg-blue-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <AppToolbar
-          events={events}
-          currentEventId={currentEventId}
-          onSelectEvent={handleSelectEvent}
-        />
-        <EventPanel
-          event={currentEvent}
-          onAdd={handleAddQuestion}
-          onUpvote={handleUpvote}
-        />
+        {/* Header global */}
+        <Header role={role} onRoleChange={r => {
+          setRole(r)
+          // bascule d’URL si on change de rôle
+          const prefix = r === 'admin' ? '/admin' : ''
+          navigate(`${prefix}/session/${sessionId}`)
+        }} />
+
+        {/* Vue principale */}
+        {role === 'participant' 
+        ? <EventPanel event={currentEvent} onAdd={handleAddQuestion} onUpvote={handleUpvote}/>
+        : <AdminSession event={currentEvent} onDelete={handleDelete}/>
+        }
+
+        {/* Canvas gestuel en bas (optionnel) */}
+        <div className="mt-8">
+          <GestureCanvas onGestureRecognized={onSwipe} />
+        </div>
       </div>
     </div>
   )

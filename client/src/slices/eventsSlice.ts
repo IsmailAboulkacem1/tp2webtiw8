@@ -53,8 +53,24 @@ export const eventsSlice = createSlice({
         if (q) q.votes += 1
       }
     },
+    deleteQuestion(state, action: PayloadAction<{ eventId: number, questionId: string }>) {
+      const ev = state.events.find(e => e.id === action.payload.eventId)
+      if (ev) {
+        ev.questions = ev.questions.filter(q => q.id !== action.payload.questionId)
+      }
+    },
+     decrementQuestion(state, action: PayloadAction<string>) {
+      const ev = state.events.find(e => e.id === state.currentEventId)
+      const q  = ev?.questions.find(q => q.id === action.payload)
+      if (q && q.votes > 0) q.votes -= 1
+    },
+     editQuestion(state, action: PayloadAction<{ questionId: string; newContent: string }>) {
+      const ev = state.events.find(e => e.id === state.currentEventId)
+      const q  = ev?.questions.find(q => q.id === action.payload.questionId)
+      if (q) q.content = action.payload.newContent
+    },
   },
 })
 
-export const { setCurrentEvent, createQuestion, upvoteQuestion } = eventsSlice.actions
+export const { setCurrentEvent, createQuestion, upvoteQuestion, deleteQuestion ,editQuestion,decrementQuestion, } = eventsSlice.actions
 export default eventsSlice.reducer
